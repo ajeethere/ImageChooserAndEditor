@@ -1,6 +1,7 @@
 package com.example.imagechooser;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -32,11 +33,7 @@ import java.io.InputStream;
 public class MainActivity extends AppCompatActivity {
 ImageView imageView;
 Button button;
-ImageView rotateLeft,rotateRight,cropImg;
-    Matrix matrix=new Matrix();
     Bitmap bitmap;
-    Bitmap img;
-    int angle=0;
     Uri pickedImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,50 +41,12 @@ ImageView rotateLeft,rotateRight,cropImg;
         setContentView(R.layout.activity_main);
         imageView=findViewById(R.id.image_view);
         button=findViewById(R.id.button);
-        rotateLeft=findViewById(R.id.rotate_left);
-        rotateRight=findViewById(R.id.rotate_right);
-        cropImg=findViewById(R.id.crop);
-        cropImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cropReq(pickedImage);
-            }
-        });
-
-        rotateRight.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                angle=angle+90;
-                imageView.setRotation(angle);
-//                matrix.setRotate(angle);
-//                bitmap=Bitmap.createBitmap(img,0,0,img.getWidth(),img.getHeight(),matrix,true);
-//                imageView.setImageBitmap(bitmap);
-                if (angle==360){
-                    angle=0;
-                }
-            }
-        });
-
-        rotateLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                angle=angle-90;
-                imageView.setRotation(angle);
-//                matrix.setRotate(angle);
-//                bitmap=Bitmap.createBitmap(img,0,0,img.getWidth(),img.getHeight(),matrix,true);
-//                imageView.setImageBitmap(bitmap);
-                if (angle==-360){
-                    angle=0;
-                }
-            }
-        });
 
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(i,1);
+               checkPermission();
             }
         });
 
@@ -96,37 +55,10 @@ ImageView rotateLeft,rotateRight,cropImg;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==1&&resultCode==RESULT_OK&&data!=null){
-            pickedImage=data.getData();
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            InputStream inputStream;
+        if (requestCode==CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE&&resultCode== Activity.RESULT_OK){
+            pickedImage=CropImage.getPickImageResultUri(this,data);
+            cropReq(pickedImage);
 
-            try {
-                inputStream=getContentResolver().openInputStream(pickedImage);
-                img=BitmapFactory.decodeStream(inputStream);
-                ExifInterface exifInterface;
-                exifInterface=new ExifInterface(inputStream);
-               // int opration=exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION,ExifInterface.ORIENTATION_UNDEFINED);
-
-//                switch (opration){
-//                    case ExifInterface.ORIENTATION_ROTATE_90:
-//                        matrix.setRotate(90);
-//                        break;
-//                    case ExifInterface.ORIENTATION_ROTATE_180:
-//                        matrix.setRotate(90);
-//                        break;
-//                }
-                bitmap=Bitmap.createBitmap(img,0,0,img.getWidth(),img.getHeight(),matrix,true);
-                imageView.setImageBitmap(img);
-                rotateLeft.setVisibility(View.VISIBLE);
-                rotateRight.setVisibility(View.VISIBLE);
-                cropImg.setVisibility(View.VISIBLE);
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         if (requestCode==CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
             CropImage.ActivityResult result=CropImage.getActivityResult(data);
@@ -143,7 +75,7 @@ ImageView rotateLeft,rotateRight,cropImg;
         }
     }
     public void checkPermission(){
-        if (Build.VERSION.SDK_INT==Build.VERSION_CODES.M){
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
             try {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE},555);
             }catch (Exception e){
@@ -168,6 +100,6 @@ ImageView rotateLeft,rotateRight,cropImg;
         CropImage.startPickImageActivity(this);
     }
     public void cropReq(Uri uri){
-        CropImage.activity().setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true).start(this);
+        CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true).start(this);
     }
 }

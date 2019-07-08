@@ -18,34 +18,5 @@
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
         android:text="pic image" />
-    <ImageView
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/rotate_left"
-        android:src="@drawable/rotate_to_left"
-        android:rotation="-30"
-        android:layout_alignParentBottom="true"/>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:orientation="vertical">
-        <ImageView
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/crop"
-            android:rotation="30"
-            android:id="@+id/crop"/>
-    <ImageView
-        android:visibility="gone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/rotate_to_right"
-        android:rotation="30"
-        android:id="@+id/rotate_right"/>
 
-    </LinearLayout>
 </RelativeLayout>
