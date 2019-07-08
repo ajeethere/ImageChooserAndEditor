@@ -4,15 +4,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
@@ -20,19 +15,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Switch;
+import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
 ImageView imageView;
 Button button;
+TextView imgSizeText;
     Bitmap bitmap;
     Uri pickedImage;
     @Override
@@ -41,6 +36,7 @@ Button button;
         setContentView(R.layout.activity_main);
         imageView=findViewById(R.id.image_view);
         button=findViewById(R.id.button);
+        imgSizeText =findViewById(R.id.img_size);
 
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +62,14 @@ Button button;
                 try {
                     bitmap= MediaStore.Images.Media.getBitmap(getContentResolver(),result.getUri());
                     imageView.setImageBitmap(bitmap);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                    byte[] imageInByte = stream.toByteArray();
+                    long lengthbmp = imageInByte.length/1000;
+//                    bitmap.getWidth();
+//                    bitmap.getHeight();
+                    imgSizeText.setText((lengthbmp)+" KB");
+                    imgSizeText.setVisibility(View.VISIBLE);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
