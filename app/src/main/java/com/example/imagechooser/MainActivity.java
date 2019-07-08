@@ -117,7 +117,7 @@ ImageView rotateLeft,rotateRight,cropImg;
 //                        break;
 //                }
                 bitmap=Bitmap.createBitmap(img,0,0,img.getWidth(),img.getHeight(),matrix,true);
-                imageView.setImageBitmap(bitmap);
+                imageView.setImageBitmap(img);
                 rotateLeft.setVisibility(View.VISIBLE);
                 rotateRight.setVisibility(View.VISIBLE);
                 cropImg.setVisibility(View.VISIBLE);
