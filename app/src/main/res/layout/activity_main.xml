@@ -26,5 +26,26 @@
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
         android:text="pic image" />
-
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/save_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:padding="5dp"
+        android:orientation="vertical">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/save_icon"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:textSize="20dp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"/>
+    </LinearLayout>
 </RelativeLayout>

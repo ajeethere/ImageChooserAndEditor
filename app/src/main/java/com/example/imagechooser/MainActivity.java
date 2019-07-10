@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -15,19 +16,24 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 ImageView imageView;
 Button button;
 TextView imgSizeText;
+LinearLayout saveBtn;
     Bitmap bitmap;
     Uri pickedImage;
     @Override
@@ -37,6 +43,16 @@ TextView imgSizeText;
         imageView=findViewById(R.id.image_view);
         button=findViewById(R.id.button);
         imgSizeText =findViewById(R.id.img_size);
+        saveBtn=findViewById(R.id.save_btn);
+        saveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SaveImage(bitmap);
+                imageView.setImageDrawable(null);
+                saveBtn.setVisibility(View.GONE);
+                imgSizeText.setText("");
+            }
+        });
 
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +86,7 @@ TextView imgSizeText;
 //                    bitmap.getHeight();
                     imgSizeText.setText((lengthbmp)+" KB");
                     imgSizeText.setVisibility(View.VISIBLE);
+                    saveBtn.setVisibility(View.VISIBLE);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -105,5 +122,27 @@ TextView imgSizeText;
     }
     public void cropReq(Uri uri){
         CropImage.activity(uri).setGuidelines(CropImageView.Guidelines.ON).setMultiTouchEnabled(true).start(this);
+    }
+    private void SaveImage(Bitmap finalBitmap) {
+
+        String root = Environment.getExternalStorageDirectory().getAbsolutePath();
+        File myDir = new File(root + "/MyFileFolder");
+        myDir.mkdirs();
+
+        Long tsLong = System.currentTimeMillis();
+        String ts = tsLong.toString();
+
+        String fname = "Image-"+ ts +".jpg";
+        File file = new File (myDir, fname);
+        if (file.exists ()) file.delete ();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+            Toast.makeText(MainActivity.this,"File Saved successfully",Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
