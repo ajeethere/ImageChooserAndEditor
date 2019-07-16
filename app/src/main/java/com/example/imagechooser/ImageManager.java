@@ -54,7 +54,7 @@ public class ImageManager {
 
         // Get a reference to a container.
         // The container name must be lower case
-        CloudBlobContainer container = blobClient.getContainerReference("001");
+        CloudBlobContainer container = blobClient.getContainerReference("??");
 
         return container;
     }
