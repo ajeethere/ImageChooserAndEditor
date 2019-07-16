@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -20,6 +21,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.microsoft.azure.storage.StorageCredentials;
+import com.microsoft.azure.storage.StorageCredentialsSharedAccessSignature;
+import com.microsoft.azure.storage.blob.CloudBlockBlob;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -28,14 +32,17 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 ImageView imageView;
 Button button;
 TextView imgSizeText;
-LinearLayout saveBtn;
+LinearLayout saveBtn,cancelBtn;
     Bitmap bitmap;
     Uri pickedImage;
+    URI i;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,13 +51,26 @@ LinearLayout saveBtn;
         button=findViewById(R.id.button);
         imgSizeText =findViewById(R.id.img_size);
         saveBtn=findViewById(R.id.save_btn);
+        cancelBtn=findViewById(R.id.cancel);
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageView.setImageDrawable(null);
+                saveBtn.setVisibility(View.GONE);
+                cancelBtn.setVisibility(View.GONE);
+                imgSizeText.setText("");
+                bitmap=null;
+            }
+        });
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SaveImage(bitmap);
                 imageView.setImageDrawable(null);
                 saveBtn.setVisibility(View.GONE);
+                cancelBtn.setVisibility(View.GONE);
                 imgSizeText.setText("");
+//               task.execute();
             }
         });
 
@@ -87,6 +107,7 @@ LinearLayout saveBtn;
                     imgSizeText.setText((lengthbmp)+" KB");
                     imgSizeText.setVisibility(View.VISIBLE);
                     saveBtn.setVisibility(View.VISIBLE);
+                    cancelBtn.setVisibility(View.VISIBLE);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -137,6 +158,7 @@ LinearLayout saveBtn;
         if (file.exists ()) file.delete ();
         try {
             FileOutputStream out = new FileOutputStream(file);
+            i=file.toURI();
             finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
             out.flush();
             out.close();
