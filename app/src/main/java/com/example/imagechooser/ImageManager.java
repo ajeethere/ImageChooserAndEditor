@@ -30,6 +30,7 @@ import java.util.LinkedList;
 
 public class ImageManager {
 
+    String imgUrl="??";
     /*
     **Only use Shared Key authentication for testing purposes!** 
     Your account name and account key, which give full read/write access to the associated Storage account, 
@@ -54,7 +55,7 @@ public class ImageManager {
 
         // Get a reference to a container.
         // The container name must be lower case
-        CloudBlobContainer container = blobClient.getContainerReference("??");
+        CloudBlobContainer container = blobClient.getContainerReference("CONTAINER_NAME");
 
         return container;
     }

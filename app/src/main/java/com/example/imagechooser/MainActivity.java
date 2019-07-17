@@ -2,6 +2,7 @@ package com.example.imagechooser;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -32,6 +34,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.UUID;
 
@@ -41,8 +44,10 @@ Button button;
 TextView imgSizeText;
 LinearLayout saveBtn,cancelBtn;
     Bitmap bitmap;
-    Uri pickedImage;
+    Uri pickedImage,uriInputImg;
     URI i;
+    InputStream inputStreamImg;
+    ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +75,10 @@ LinearLayout saveBtn,cancelBtn;
                 saveBtn.setVisibility(View.GONE);
                 cancelBtn.setVisibility(View.GONE);
                 imgSizeText.setText("");
+//                progressDialog=new ProgressDialog(getApplicationContext());
+//                progressDialog.setMessage("Please Wait...");
+//                progressDialog.show();
+                UploadImage();
 //               task.execute();
             }
         });
@@ -98,8 +107,14 @@ LinearLayout saveBtn,cancelBtn;
                 try {
                     bitmap= MediaStore.Images.Media.getBitmap(getContentResolver(),result.getUri());
                     imageView.setImageBitmap(bitmap);
+
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                    String path = MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap, "Title", null);
+
+                    uriInputImg=Uri.parse(path);
+                    inputStreamImg = getContentResolver().openInputStream(uriInputImg);
+
                     byte[] imageInByte = stream.toByteArray();
                     long lengthbmp = imageInByte.length/1000;
 //                    bitmap.getWidth();
@@ -165,6 +180,44 @@ LinearLayout saveBtn,cancelBtn;
             Toast.makeText(MainActivity.this,"File Saved successfully",Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    private void UploadImage()
+    {
+        try {
+            final InputStream imageStream = getContentResolver().openInputStream(this.uriInputImg);
+            final int imageLength = imageStream.available();
+
+            final Handler handler = new Handler();
+
+            Thread th = new Thread(new Runnable() {
+                public void run() {
+
+                    try {
+
+                        final String imageName = ImageManager.UploadImage(imageStream, imageLength);
+
+                        handler.post(new Runnable() {
+                            public void run() {
+                                Toast.makeText(MainActivity.this, "Image Uploaded Successfully. Name = " + imageName, Toast.LENGTH_SHORT).show();
+                             //   progressDialog.dismiss();
+                            }
+                        });
+                    }
+                    catch(Exception ex) {
+                        final String exceptionMessage = ex.getMessage();
+                        handler.post(new Runnable() {
+                            public void run() {
+                                Toast.makeText(MainActivity.this, exceptionMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }});
+            th.start();
+        }
+        catch(Exception ex) {
+
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 }
