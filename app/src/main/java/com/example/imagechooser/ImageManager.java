@@ -30,7 +30,7 @@ import java.util.LinkedList;
 
 public class ImageManager {
 
-    String imgUrl="https://drcomstorage.blob.core.windows.net/001/";
+    String imgUrl="YOUR URL WITH CONTAINER";
     /*
     **Only use Shared Key authentication for testing purposes!** 
     Your account name and account key, which give full read/write access to the associated Storage account, 
@@ -41,8 +41,8 @@ public class ImageManager {
     and https://docs.microsoft.com/en-us/azure/storage/common/storage-dotnet-shared-access-signature-part-1 
     */
     public static final String storageConnectionString = "DefaultEndpointsProtocol=https;"
-            + "AccountName=drcomstorage;"
-            + "AccountKey=7kwkH6OuZDR4WG2yOyHu3w41GvgWMZ0KRncPE0CoNhBKWt/tprZN8UaAJHJTSxdSEmIKZGcG/3OvYAkMgMN/dg==";
+            + "AccountName=YOUR ACCOUNT NAME;"
+            + "AccountKey=YOUR ACCOUNT KRY";
 
     private static CloudBlobContainer getContainer() throws Exception {
         // Retrieve storage account from connection-string.
